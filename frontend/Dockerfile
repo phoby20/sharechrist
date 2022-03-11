@@ -1,28 +1,3 @@
-# base image를 도커 허브에서 가져옴
-FROM node as builder
-
-# 노드서버 소스가 들어갈 폴더 지정
-WORKDIR /app
-
-# 소스 코드가 바뀔때 마다 종속성까지 다시 복사하는 것을 막기 위해 "package.json"를 먼저 카피
-COPY ./package.json ./
-
-# 카피한 종속성을 다운 받음
-RUN npm install
-
-# 다운받은 소스들을 "WORKDIR"로 카피
-COPY . .
-
-# 컨테이너가 실행 될때 같이 실행 될 명령어
-RUN npm run build
-
-
-# base image를 도커 허브에서 가져옴
-FROM nginx
-
-EXPOSE 3000
-
-# nginx의 "/etc/nginx/conf.d/default.conf" 파일을 로컬의 "/nginx/default.conf" 로 덮어쓴다
-COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
-
-COPY --from=builder /dist /usr/share/nginx/html
+FROM node:14.17.1
+WORKDIR /src
+RUN yarn global add @vue/cli
